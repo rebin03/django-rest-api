@@ -1,5 +1,50 @@
 from rest_framework import serializers
 from home.models import Person, Team
+from django.contrib.auth.models import User
+
+
+
+class RegisterSerializer(serializers.Serializer):
+    
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    
+    # this is for ModelSerializer
+    # class Meta:
+    #     model = User
+    #     fields = ['username', 'email', 'password']
+    
+    def validate(self, data):
+        
+        if data.get('username'):
+            if User.objects.filter(username=data.get('username')).exists():
+                raise serializers.ValidationError('Usrname already exists!')
+
+        if data.get('email'):
+            if User.objects.filter(email=data.get('email')).exists():
+                raise serializers.ValidationError("Email already exists!")
+
+        return data
+    
+    def create(self, validated_data):
+        
+        user_obj = User.objects.create(username=validated_data.get('username'), email=validated_data.get('email'))
+        user_obj.set_password(validated_data.get('password'))
+        user_obj.save()
+        
+        return validated_data
+    
+
+class LoginSerializer(serializers.Serializer):
+    
+    username = serializers.CharField()
+    password = serializers.CharField()
+    
+    # For ModelSerializer
+    # class Meta:
+    #     model = User
+    #     fields = ['username', 'password']
 
 
 class TeamSerializer(serializers.ModelSerializer):

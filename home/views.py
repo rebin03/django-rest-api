@@ -2,12 +2,57 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from home.models import Person
-from home.serializer import PersonSerializer
+from home.serializer import LoginSerializer, PersonSerializer, RegisterSerializer
 from rest_framework.views import APIView
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 
 
 # Create your views here.
+
+class RegisterAPI(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        
+        users = User.objects.all()
+        serializer = RegisterSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, *args, **kwargs):
+        
+        _data = request.data
+        serializer = RegisterSerializer(data=_data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message':'User Created'}, status=status.HTTP_201_CREATED)
+        
+        return Response({'message': serializer.errors}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+class LoginAPI(APIView):
+    
+    def post(self, request, *args, **kwargs):
+        
+        _data = request.data
+        serializer = LoginSerializer(data=_data)
+
+        if not serializer.is_valid():
+            return Response({'message':serializer.errors}, status=status.HTTP_404_NOT_FOUND)
+        
+        user_obj = authenticate(request, username=serializer.data.get('username'), password=serializer.data.get('password'))
+
+        if not user_obj:
+            return Response({'message':'Invalid credential'}, status=status.HTTP_404_NOT_FOUND)
+        
+        token, _ = Token.objects.get_or_create(user=user_obj)
+        
+        print(_)
+
+        return Response({'message':'Login Successfull', 'token':str(token)}, status=status.HTTP_200_OK)
+
 
 @api_view(['GET', 'POST', 'PUT'])
 def index(request):
