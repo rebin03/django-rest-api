@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -86,7 +88,14 @@ class PersonView(APIView):
     def get(self, request, *args, **kwargs):
         
         person_objects = Person.objects.all()
-        serializer = PersonSerializer(person_objects, many=True)
+        
+        # Pagination using django.core.paginator  
+        page = request.GET.get('page', 1)
+        page_size = 2
+        paginator = Paginator(person_objects, page_size)
+        
+        # serializer = PersonSerializer(person_objects, many=True)
+        serializer = PersonSerializer(paginator.page(page), many=True)
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
@@ -203,11 +212,18 @@ def person(request):
         return Response({'message': 'Person deleted'})
 
 
+class CustomPagination(PageNumberPagination):
+    
+    page_size = 2
+    page_size_query_param = 'page'
+
 
 class PersonViewSet(viewsets.ModelViewSet):
     
+    # permission_classes = []
     serializer_class = PersonSerializer
     queryset = Person.objects.all()
+    pagination_class = CustomPagination
     
     def list(self, request):
         
@@ -217,9 +233,12 @@ class PersonViewSet(viewsets.ModelViewSet):
         if search:
             
             qs = Person.objects.filter(name__startswith=search)
+        
+        # Paginate the queryset  
+        paginated_qs = self.paginate_queryset(qs)
 
-        serializer = PersonSerializer(qs, many=True)
-        return Response({'status':200, 'data': serializer.data})
-    
-
-   
+        # Serialize the pagenated queryset
+        serializer = PersonSerializer(paginated_qs, many=True)
+        
+        # Return the paginated resoponse
+        return self.get_paginated_response({'status':200, 'data': serializer.data})
