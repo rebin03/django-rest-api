@@ -8,6 +8,8 @@ from rest_framework import viewsets, status
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 
 # Create your views here.
@@ -33,6 +35,8 @@ class RegisterAPI(APIView):
     
     
 class LoginAPI(APIView):
+    
+    permission_classes = []
     
     def post(self, request, *args, **kwargs):
         
@@ -75,6 +79,9 @@ def index(request):
     
 # Implementing using class based view
 class PersonView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     
     def get(self, request, *args, **kwargs):
         
@@ -213,3 +220,6 @@ class PersonViewSet(viewsets.ModelViewSet):
 
         serializer = PersonSerializer(qs, many=True)
         return Response({'status':200, 'data': serializer.data})
+    
+
+   
