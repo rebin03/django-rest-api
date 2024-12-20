@@ -1,6 +1,6 @@
 # Django REST API
 
-This repository api projects that I have created to learn and practice Django REST Framework (DRF) concepts.
+This repository contain api projects that I have created to learn and practice Django REST Framework (DRF) concepts.
 
 ## Topics Covered
 
