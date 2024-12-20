@@ -13,6 +13,7 @@ db.sqlite3
 venv/
 ENV/
 .venv/
+restenv/
 
 # IDE specific files
 .vscode/
