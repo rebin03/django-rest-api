@@ -1,0 +1,43 @@
+API
+----
+
+API stands for Application Programming Interface, and it's a set of protocols that allow different software components to communicate and share data
+
+=> An http response contain following things:
+
+- url 
+- method: GET, POST, PUT, DELETE, etc.
+- body: datas
+- headers: credential
+
+
+HTTP Methods:
+-------------
+
+- GET : to read data
+- POST: Create 
+- PUT | PATCH: Update data
+- DELETE: Delete a data item
+
+
+=> HTTP Status Codes:
+
+1xx - informational
+2xx - Success
+3xx - Redirection
+4xx - Client error
+5xx - Server error
+
+
+SERIALIZERS
+-----------
+
+- Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into JSON, XML or other content types. 
+
+=> Serialization:
+	- Convert querysets and model instances to python native data types
+
+=> Deserialization:
+	- Convert python native data types to queryset
+
+- The serializers in REST framework work very similarly to Django's Form and ModelForm classes.
