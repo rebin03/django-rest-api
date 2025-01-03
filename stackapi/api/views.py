@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import authentication, permissions
-from api.serializers import UserSerializer, QuestionSerializer
+from api.serializers import AnswerSerializer, UserSerializer, QuestionSerializer
 from api.models import Question
 from api.permissions import IsOwnerOnly, IsOwnerOrReadOnly
 
@@ -34,3 +34,17 @@ class QuestionRetriveUpdateDestroyView(RetrieveAPIView, UpdateAPIView, DestroyAP
 
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
+    
+    
+# QuestionAnswerView
+# AnswerUpvoteDownvoteView
+# ProfileUpdateView
+
+class QuestionAnswerView(CreateAPIView):
+    
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsOwnerOnly]
+    
+    serializer_class = AnswerSerializer
+    
+    
